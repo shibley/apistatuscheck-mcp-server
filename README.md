@@ -2,6 +2,8 @@
 
 An MCP (Model Context Protocol) server for checking real-time operational status of 114+ cloud services and APIs directly from AI coding assistants.
 
+[![API Status Check Server MCP server](https://glama.ai/mcp/servers/shibley/apistatuscheck-mcp-server/badges/card.svg)](https://glama.ai/mcp/servers/shibley/apistatuscheck-mcp-server)
+
 ## Features
 
 | Tool | Description |
