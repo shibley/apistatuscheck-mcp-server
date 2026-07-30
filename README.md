@@ -24,6 +24,19 @@ AWS, GitHub, Stripe, OpenAI, Vercel, Cloudflare, Datadog, PagerDuty, Twilio, Sho
 npx -y apistatuscheck-mcp-server
 ```
 
+> **Broken on published version `0.1.0`.** That tarball's `dist/index.js` shipped
+> without a `#!/usr/bin/env node` shebang, so the shim was executed by `sh`
+> instead of Node and the command failed with `command not found`. Fixed in this
+> repo (shebang added, plus an `apistatuscheck-mcp-server` bin alias so the
+> command matches the package name), but the fix is not on npm yet — `0.1.1`
+> needs to be published. Until then, build from source:
+>
+> ```bash
+> git clone https://github.com/shibley/apistatuscheck-mcp-server.git
+> cd apistatuscheck-mcp-server && npm install && npm run build
+> node dist/index.js
+> ```
+
 ### Using Docker
 
 ```bash
