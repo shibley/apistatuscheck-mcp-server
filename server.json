@@ -3,27 +3,17 @@
   "name": "io.github.shibley/apistatuscheck",
   "title": "API Status Check",
   "description": "Check real-time uptime and incident status for 100+ APIs and cloud services.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "websiteUrl": "https://apistatuscheck.com",
   "repository": {
     "url": "https://github.com/shibley/apistatuscheck-mcp-server",
     "source": "github",
     "id": "1167362967"
   },
-  "packages": [
+  "remotes": [
     {
-      "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "apistatuscheck-mcp-server",
-      "version": "0.1.1",
-      "transport": { "type": "stdio" },
-      "environmentVariables": [
-        {
-          "name": "ASC_BASE_URL",
-          "description": "Base URL for the API Status Check API. Defaults to https://apistatuscheck.com.",
-          "isRequired": false
-        }
-      ]
+      "type": "streamable-http",
+      "url": "https://apistatuscheck.com/api/mcp"
     }
   ]
 }

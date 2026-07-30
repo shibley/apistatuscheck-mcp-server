@@ -1,16 +1,19 @@
-name: Publish to npm + MCP Registry
+name: Publish to MCP Registry
 
-# Publishes the npm package and then registers it in the official MCP Registry
+# Publishes this server to the official MCP Registry
 # (https://registry.modelcontextprotocol.io) on every version tag.
 #
-# Registry auth is GitHub OIDC — no secret needed, and it grants the
-# `io.github.shibley/*` namespace from this repository's identity alone.
+# The registry entry is the *remote* Streamable HTTP endpoint served by
+# apistatuscheck.com itself, NOT the npm package. That is deliberate: the
+# registry verifies npm ownership by reading `mcpName` out of the published
+# tarball, which needs an NPM_TOKEN this repo does not have. A remote entry is
+# verified by GitHub OIDC alone, which grants the `io.github.shibley/*`
+# namespace from this repository's identity — no secrets are stored anywhere,
+# so this publishes with zero human setup.
 #
-# The npm publish DOES need an NPM_TOKEN repository secret. The registry
-# validates package ownership by reading the `mcpName` field out of the
-# *published* tarball, so the npm step has to land first — which is why the
-# job fails fast with an explicit message when the token is missing rather
-# than half-publishing.
+# The stdio npm package still lives in src/ and can be added back to
+# server.json as a `packages` entry once an NPM_TOKEN exists; it is left out
+# here so a missing token cannot block the listing.
 
 on:
   push:
@@ -28,51 +31,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Require NPM_TOKEN
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [ -z "${NPM_TOKEN}" ]; then
-            echo "::error::NPM_TOKEN secret is not set. The MCP Registry verifies ownership via the mcpName field in the published npm tarball, so npm publish must succeed first. Add the secret under Settings > Secrets and variables > Actions, then re-run."
-            exit 1
-          fi
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: "lts/*"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
-      - name: Smoke-test the built binary over stdio
+      - name: Verify the remote endpoint is actually up before advertising it
         run: |
           set -euo pipefail
-          chmod +x dist/index.js
-          out=$(echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' | ./dist/index.js)
-          echo "$out"
-          echo "$out" | jq -e '.result.protocolVersion' > /dev/null
-
-      - name: Set version from the tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          jq --arg v "$VERSION" '.version = $v' package.json > p.tmp && mv p.tmp package.json
-          jq --arg v "$VERSION" '.version = $v | .packages[0].version = $v' server.json > s.tmp && mv s.tmp server.json
-          cat server.json
-
-      - name: Publish package to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          url=$(jq -r '.remotes[0].url' server.json)
+          echo "Handshaking $url"
+          body=$(curl -sS -m 30 "$url" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}')
+          echo "$body" | head -c 400
+          echo "$body" | jq -e '.result.protocolVersion' > /dev/null
 
       - name: Install mcp-publisher
         run: |
           curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Set version in server.json from the tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
+          cat server.json
 
       - name: Authenticate to MCP Registry
         run: ./mcp-publisher login github-oidc
