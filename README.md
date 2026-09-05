@@ -18,6 +18,22 @@ AWS, GitHub, Stripe, OpenAI, Vercel, Cloudflare, Datadog, PagerDuty, Twilio, Sho
 
 ## Quick Start
 
+### Hosted endpoint (recommended — nothing to install)
+
+The server is also hosted, so the fastest path is the remote Streamable HTTP
+endpoint. This is the same entry the official MCP Registry advertises as
+`io.github.shibley/apistatuscheck`.
+
+```bash
+claude mcp add --transport http apistatuscheck https://apistatuscheck.com/api/mcp
+```
+
+For stdio-only clients:
+
+```bash
+npx -y mcp-remote https://apistatuscheck.com/api/mcp
+```
+
 ### Using npx
 
 ```bash
@@ -48,14 +64,16 @@ docker run -i apistatuscheck-mcp
 
 ### Claude Desktop
 
-Add to your `claude_desktop_config.json`:
+Add to your `claude_desktop_config.json`. This points at the hosted endpoint —
+**do not** use `"args": ["-y", "apistatuscheck-mcp-server"]`, because the only version
+on npm (`0.1.0`) is the broken one described above and fails silently.
 
 ```json
 {
   "mcpServers": {
     "apistatuscheck": {
       "command": "npx",
-      "args": ["-y", "apistatuscheck-mcp-server"]
+      "args": ["-y", "mcp-remote", "https://apistatuscheck.com/api/mcp"]
     }
   }
 }
@@ -63,12 +81,14 @@ Add to your `claude_desktop_config.json`:
 
 ### Cursor / Other MCP Clients
 
+Same hosted endpoint via `mcp-remote`:
+
 ```json
 {
   "mcpServers": {
     "apistatuscheck": {
       "command": "npx",
-      "args": ["-y", "apistatuscheck-mcp-server"]
+      "args": ["-y", "mcp-remote", "https://apistatuscheck.com/api/mcp"]
     }
   }
 }
