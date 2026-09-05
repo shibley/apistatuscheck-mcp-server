@@ -1,6 +1,6 @@
 # API Status Check MCP Server
 
-An MCP (Model Context Protocol) server for checking real-time operational status of 114+ cloud services and APIs directly from AI coding assistants.
+An MCP (Model Context Protocol) server for checking real-time operational status of 285 cloud services and APIs directly from AI coding assistants.
 
 ## Features
 
@@ -14,7 +14,7 @@ An MCP (Model Context Protocol) server for checking real-time operational status
 
 ## Supported Services
 
-AWS, GitHub, Stripe, OpenAI, Vercel, Cloudflare, Datadog, PagerDuty, Twilio, Shopify, Slack, Zoom, and 100+ more. Full list at [apistatuscheck.com](https://apistatuscheck.com).
+AWS, GitHub, Stripe, OpenAI, Vercel, Cloudflare, Datadog, PagerDuty, Twilio, Shopify, Slack, Zoom, and 270+ more. Full list at [apistatuscheck.com](https://apistatuscheck.com).
 
 ## Quick Start
 
