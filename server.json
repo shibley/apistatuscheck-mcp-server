@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.shibley/apistatuscheck",
   "title": "API Status Check",
-  "description": "Check real-time uptime and incident status for 275+ APIs and cloud services.",
-  "version": "0.2.2",
+  "description": "Live status probes plus published uptime and incident history for 280+ APIs and cloud services.",
+  "version": "0.2.3",
   "websiteUrl": "https://apistatuscheck.com",
   "repository": {
     "url": "https://github.com/shibley/apistatuscheck-mcp-server",
